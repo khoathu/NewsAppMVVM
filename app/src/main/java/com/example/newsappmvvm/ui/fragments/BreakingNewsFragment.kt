@@ -36,7 +36,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 is Resource.Error -> {
                     hideProgressBar()
                     response.message?.let { message ->
-                        Log.e(TAG, "An error occured: $message")
+                        Log.e(TAG, "An error occurred: $message")
                     }
                 }
                 is Resource.Loading -> {
@@ -47,7 +47,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     }
 
     private fun hideProgressBar() {
-        paginationProgressBar.visibility = View.GONE
+        paginationProgressBar.visibility = View.INVISIBLE
     }
 
     private fun showProgressBar() {
