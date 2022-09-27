@@ -6,12 +6,12 @@
         android:icon="@drawable/ic_breaking_news"
         />
 
-    <item android:id="@+id/SavedNewsFragment"
+    <item android:id="@+id/savedNewsFragment"
         android:title="Saved News"
         android:icon="@drawable/ic_favorite"
         />
 
-    <item android:id="@+id/SearchNewsFragment"
+    <item android:id="@+id/searchNewsFragment"
         android:title="Search News"
         android:icon="@drawable/ic_all_news"
         />
