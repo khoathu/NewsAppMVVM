@@ -7,13 +7,11 @@
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/drawable-v24/ic_breaking_news.xml" value="0.136" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/drawable-v24/ic_favorite.xml" value="0.136" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/activity_main.xml" value="0.10299145299145299" />
-        <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/activity_news.xml" value="0.2625" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/fragment_article.xml" value="0.1" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/fragment_breaking_news.xml" value="0.1" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/fragment_saved_news.xml" value="0.1" />
         <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/fragment_search_news.xml" value="0.1" />
-        <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/item_article_preview.xml" value="0.25" />
-        <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.11041666666666666" />
+        <entry key="..\:/Users/G3/StudioProjects/NewsAppMVVM/app/src/main/res/layout/item_article_preview.xml" value="0.136" />
       </map>
     </option>
   </component>
