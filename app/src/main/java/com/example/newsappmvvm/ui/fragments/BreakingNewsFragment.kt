@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsappmvvm.R
 import com.example.newsappmvvm.adapters.NewsAdapter
@@ -30,7 +31,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }
-            requireActivity().findNavController(R.id.newsNavHostFragment).navigate(
+            findNavController().navigate(
                 R.id.action_breakingNewsFragment_to_articleNewsFragment,
                 bundle
             )

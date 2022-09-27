@@ -11,7 +11,7 @@ import com.example.newsappmvvm.viewmodels.NewsViewModel
 import kotlinx.android.synthetic.main.fragment_article.*
 
 class ArticleNewsFragment : Fragment(R.layout.fragment_article) {
-    lateinit var viewModel : NewsViewModel
+    lateinit var viewModel: NewsViewModel
 
     val args: ArticleNewsFragmentArgs by navArgs()
 
@@ -20,11 +20,10 @@ class ArticleNewsFragment : Fragment(R.layout.fragment_article) {
         viewModel = (activity as NewsActivity).viewModel
 
         val article = args.article
-        article.let {
-            webViewArticle.apply {
-                webViewClient = WebViewClient()
-                article.url?.let { it -> loadUrl(it) }
-            }
+
+        webViewArticle.apply {
+            webViewClient = WebViewClient()
+            article.url?.let { it -> loadUrl(it) }
         }
 
     }
