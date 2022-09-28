@@ -3,7 +3,7 @@ package com.example.newsappmvvm.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsappmvvm.R
@@ -20,6 +20,10 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as NewsActivity).viewModel
         setupRecycleView()
+
+        viewModel.getSavedArtices().observe(viewLifecycleOwner, Observer { articles ->
+            savedNewsAdapter.differ.submitList(articles)
+        })
 
         savedNewsAdapter.setOnClickListener {
             val bundle = Bundle().apply {
