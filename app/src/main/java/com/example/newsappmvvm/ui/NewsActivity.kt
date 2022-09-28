@@ -1,13 +1,9 @@
 package com.example.newsappmvvm.ui
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.newsappmvvm.R
 import com.example.newsappmvvm.db.ArticleDatabase
@@ -15,7 +11,7 @@ import com.example.newsappmvvm.repository.NewsRepository
 import com.example.newsappmvvm.viewmodels.NewsViewModel
 import kotlinx.android.synthetic.main.activity_news.*
 
-class NewsActivity: AppCompatActivity() {
+class NewsActivity : AppCompatActivity() {
 
     lateinit var viewModel: NewsViewModel
 
@@ -24,11 +20,13 @@ class NewsActivity: AppCompatActivity() {
         setContentView(R.layout.activity_news)
 
         val newsRepository = NewsRepository(ArticleDatabase(this))
-        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
+        val viewModelProviderFactory =
+            NewsViewModelProviderFactory(application, newsRepository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(NewsViewModel::class.java)
 
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
         bottomNavigationView.setupWithNavController(navController)
     }
