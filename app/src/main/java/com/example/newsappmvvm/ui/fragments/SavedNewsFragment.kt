@@ -27,7 +27,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         viewModel = (activity as NewsActivity).viewModel
         setupRecycleView()
 
-        viewModel.getSavedArtices().observe(viewLifecycleOwner, Observer { articles ->
+        viewModel.getSavedArticles().observe(viewLifecycleOwner, Observer { articles ->
             savedNewsAdapter.differ.submitList(articles)
         })
 

@@ -46,7 +46,7 @@ class NewsViewModel(
         newsRepository.deleteArticle(article)
     }
 
-    fun getSavedArtices() = newsRepository.getSavedArticles()
+    fun getSavedArticles() = newsRepository.getSavedArticles()
 
     private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
         if (response.isSuccessful) {
