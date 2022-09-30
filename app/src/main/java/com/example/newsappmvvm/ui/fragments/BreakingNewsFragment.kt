@@ -29,7 +29,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         viewModel = (activity as NewsActivity).viewModel
         setupRecyclerView()
 
-        newAdapter.setOnClickListener {
+        newAdapter.onItemClickListener = {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }

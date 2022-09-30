@@ -47,7 +47,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
             }
         }
 
-        newsAdapter.setOnClickListener {
+        newsAdapter.onItemClickListener = {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }

@@ -66,7 +66,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             attachToRecyclerView(rvSavedNews)
         }
 
-        savedNewsAdapter.setOnClickListener {
+        savedNewsAdapter.onItemClickListener = {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }
