@@ -22,7 +22,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     lateinit var viewModel: NewsViewModel
     lateinit var newAdapter: NewsAdapter
 
-    var isRefreshList = true
+    var isRefreshNewList = true
 
     val TAG = "BreakingNewsFragment"
 
@@ -42,7 +42,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         }
 
         srlRefreshList.setOnRefreshListener {
-            isRefreshList = true
+            isRefreshNewList = true
             viewModel.breakingNewsPage = 1
             viewModel.breakingNewsResponse = null
             viewModel.getBreakingNews("us")
@@ -121,7 +121,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning
                     && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                isRefreshList = false
+                isRefreshNewList = false
                 viewModel.getBreakingNews("us")
                 isScrolling = false
             }
