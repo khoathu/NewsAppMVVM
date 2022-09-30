@@ -27,6 +27,8 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
     lateinit var viewModel: NewsViewModel
     lateinit var newsAdapter: NewsAdapter
 
+    var isRefreshNewList = true
+
     val TAG = "SearchNewsFragment"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,6 +43,9 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                 delay(SEARCH_NEWS_TIME_DELAY)
                 editable?.let {
                     if (it.toString().isNotEmpty()) {
+                        viewModel.searchNewsPage = 1
+                        viewModel.searchNewsResponse = null
+                        isRefreshNewList = true
                         viewModel.searchNews(it.toString())
                     }
                 }
@@ -55,6 +60,17 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                 R.id.action_searchNewsFragment_to_articleNewsFragment,
                 bundle
             )
+        }
+
+        srlRefreshSearchNews.setOnRefreshListener {
+            val searchText = edSearch.text.toString()
+            if (searchText.isNotEmpty()) {
+                viewModel.searchNewsPage = 1
+                viewModel.searchNewsResponse = null
+                isRefreshNewList = true
+                viewModel.searchNews(searchText)
+            }
+            srlRefreshSearchNews.isRefreshing = false
         }
 
         viewModel.searchNews.observe(viewLifecycleOwner, Observer { response ->
@@ -101,6 +117,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
     private fun hideProgressBar() {
         paginationProgressBar.visibility = View.INVISIBLE
         isLoading = false
+        srlRefreshSearchNews.isRefreshing = false
     }
 
     var isLastPage = false
@@ -129,6 +146,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning
                     && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
+                isRefreshNewList = false
                 viewModel.searchNews(edSearch?.text.toString())
                 isScrolling = false
             }

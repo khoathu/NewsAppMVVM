@@ -22,6 +22,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     lateinit var viewModel: NewsViewModel
     lateinit var newAdapter: NewsAdapter
 
+    var isRefreshNewList = true
+
     val TAG = "BreakingNewsFragment"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,6 +39,13 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 R.id.action_breakingNewsFragment_to_articleNewsFragment,
                 bundle
             )
+        }
+
+        srlRefreshList.setOnRefreshListener {
+            isRefreshNewList = true
+            viewModel.breakingNewsPage = 1
+            viewModel.breakingNewsResponse = null
+            viewModel.getBreakingNews("us")
         }
 
         viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
@@ -69,6 +78,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     private fun hideProgressBar() {
         paginationProgressBar.visibility = View.INVISIBLE
         isLoading = false
+        srlRefreshList.isRefreshing = false
     }
 
     private fun showProgressBar() {
@@ -92,8 +102,9 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     private val onScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                 isScrolling = true
+            }
         }
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -110,6 +121,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning
                     && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
+                isRefreshNewList = false
                 viewModel.getBreakingNews("us")
                 isScrolling = false
             }
