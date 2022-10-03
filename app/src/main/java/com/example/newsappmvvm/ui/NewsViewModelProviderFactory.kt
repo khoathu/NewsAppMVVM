@@ -8,9 +8,10 @@ import com.example.newsappmvvm.viewmodels.NewsViewModel
 
 class NewsViewModelProviderFactory(
     val app: Application,
-    val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
         return NewsViewModel(app, newsRepository) as T
     }
 }

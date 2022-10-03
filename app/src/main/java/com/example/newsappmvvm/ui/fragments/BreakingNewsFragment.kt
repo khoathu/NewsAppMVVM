@@ -16,6 +16,7 @@ import com.example.newsappmvvm.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsappmvvm.utils.Resource
 import com.example.newsappmvvm.viewmodels.NewsViewModel
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 

@@ -6,10 +6,9 @@ import android.net.ConnectivityManager
 import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsappmvvm.MyApplication
 import com.example.newsappmvvm.models.Article
 import com.example.newsappmvvm.models.NewsResponse
 import com.example.newsappmvvm.repository.NewsRepository
@@ -20,8 +19,8 @@ import retrofit2.Response
 
 class NewsViewModel(
     val app: Application,
-    val newsRepository: NewsRepository
-) : AndroidViewModel(app) {
+    private val newsRepository: NewsRepository
+) : ViewModel() {
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var breakingNewsPage = 1
@@ -114,28 +113,32 @@ class NewsViewModel(
     }
 
     private fun hasInternetConnection(): Boolean {
-        val connectivityManager = getApplication<MyApplication>().getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val capabilities =
-                connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-            return when {
-                capabilities.hasTransport(TRANSPORT_WIFI) -> true
-                capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
-                capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
-                else -> false
-            }
-        } else {
-            connectivityManager.activeNetworkInfo?.run {
-                return when (type) {
-                    TYPE_WIFI -> true
-                    TYPE_MOBILE -> true
-                    TYPE_ETHERNET -> true
+        try {
+            val connectivityManager = app.applicationContext.getSystemService(
+                Context.CONNECTIVITY_SERVICE
+            ) as ConnectivityManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val activeNetwork = connectivityManager.activeNetwork ?: return false
+                val capabilities =
+                    connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+                return when {
+                    capabilities.hasTransport(TRANSPORT_WIFI) -> true
+                    capabilities.hasTransport(TRANSPORT_CELLULAR) -> true
+                    capabilities.hasTransport(TRANSPORT_ETHERNET) -> true
                     else -> false
                 }
+            } else {
+                connectivityManager.activeNetworkInfo?.run {
+                    return when (type) {
+                        TYPE_WIFI -> true
+                        TYPE_MOBILE -> true
+                        TYPE_ETHERNET -> true
+                        else -> false
+                    }
+                }
             }
+        } catch (t: Throwable) {
+            print(t.printStackTrace())
         }
         return false
     }
