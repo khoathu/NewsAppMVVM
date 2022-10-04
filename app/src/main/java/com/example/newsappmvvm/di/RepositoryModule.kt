@@ -9,6 +9,6 @@ import org.kodein.di.singleton
 val repositoryModule = DI.Module(name = "repository_module")
 {
     bind<NewsRepository>() with singleton {
-        NewsRepository(db = instance())
+        NewsRepository(db = instance(), api = instance())
     }
 }

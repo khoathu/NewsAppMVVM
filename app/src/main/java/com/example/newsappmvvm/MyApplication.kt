@@ -2,6 +2,7 @@ package com.example.newsappmvvm
 
 import android.app.Application
 import android.content.Context
+import com.example.newsappmvvm.di.networkModule
 import com.example.newsappmvvm.di.repositoryModule
 import com.example.newsappmvvm.di.viewModelModule
 import org.kodein.di.DI
@@ -30,6 +31,7 @@ class MyApplication : Application(), DIAware {
         import(databaseModule)
         import(repositoryModule)
         import(viewModelModule)
+        import(networkModule)
     }
 
 }
