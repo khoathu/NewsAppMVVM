@@ -6,10 +6,9 @@ import android.net.ConnectivityManager
 import android.net.ConnectivityManager.*
 import android.net.NetworkCapabilities.*
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsappmvvm.MyApplication
 import com.example.newsappmvvm.models.Article
 import com.example.newsappmvvm.models.NewsResponse
 import com.example.newsappmvvm.repository.NewsRepository
@@ -19,9 +18,9 @@ import okio.IOException
 import retrofit2.Response
 
 class NewsViewModel(
-    val app: Application,
+    private val app: Application,
     private val newsRepository: NewsRepository
-) : AndroidViewModel(app) {
+) : ViewModel() {
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var breakingNewsPage = 1
@@ -114,7 +113,7 @@ class NewsViewModel(
     }
 
     private fun hasInternetConnection(): Boolean {
-        val connectivityManager = getApplication<MyApplication>().getSystemService(
+        val connectivityManager = app.getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
