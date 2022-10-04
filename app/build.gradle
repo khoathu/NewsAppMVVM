@@ -82,4 +82,8 @@ dependencies {
     // Swipe refresh layout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
+    //kodein
+    implementation "org.kodein.di:kodein-di-framework-android-x:7.15.0-kotlin-1.7.20-RC"
+    implementation "org.kodein.di:kodein-di-framework-android-x-viewmodel:7.15.0-kotlin-1.7.20-RC"
+
 }
