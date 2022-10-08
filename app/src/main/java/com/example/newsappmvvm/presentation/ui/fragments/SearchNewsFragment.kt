@@ -11,12 +11,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsappmvvm.R
-import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.ui.NewsActivity
+import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
+import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import com.example.newsappmvvm.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsappmvvm.utils.Constants.Companion.SEARCH_NEWS_TIME_DELAY
 import com.example.newsappmvvm.utils.Resource
-import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import kotlinx.android.synthetic.main.fragment_search_news.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -77,9 +77,12 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
             when (response) {
                 is Resource.Success -> {
                     hideProgressBar()
-                    response.data?.articles?.let {
-                        newsAdapter.differ.submitList(it.toList())
-                        val totalPages = response.data.totalResults / QUERY_PAGE_SIZE + 2
+                    response.data?.let { newsResponse ->
+                        val isEmptyList = newsResponse.articles.isEmpty() && isRefreshNewList
+                        showEmptyList(isEmptyList)
+
+                        newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        val totalPages = newsResponse.totalResults / QUERY_PAGE_SIZE + 2
                         isLastPage = totalPages == viewModel.searchNewsPage
                         if (isLastPage) {
                             rvSearchNews.setPadding(0, 0, 0, 0)
@@ -106,6 +109,16 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
             addOnScrollListener(this@SearchNewsFragment.onScrollListener)
+        }
+    }
+
+    private fun showEmptyList(isEmpty: Boolean) {
+        if (isEmpty) {
+            rvSearchNews.visibility = View.GONE
+            tvEmptyList.visibility = View.VISIBLE
+        } else {
+            rvSearchNews.visibility = View.VISIBLE
+            tvEmptyList.visibility = View.GONE
         }
     }
 
