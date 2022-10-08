@@ -1,9 +1,12 @@
 package com.example.newsappmvvm.domain.usecases.news
 
+import com.example.newsappmvvm.domain.model.NewsResponse
 import com.example.newsappmvvm.domain.repository.NewsRepository
+import com.example.newsappmvvm.utils.Resource
 
 class GetBreakingNewsUseCase(private val newsRepository: NewsRepository) {
-    suspend fun getBreakingNews(countryCode: String, pageNumber: Int) {
-        newsRepository.getBreakingNews(countryCode, pageNumber)
+
+    suspend operator fun invoke(countryCode: String, pageNumber: Int): Resource<NewsResponse> {
+        return newsRepository.getBreakingNews(countryCode, pageNumber)
     }
 }

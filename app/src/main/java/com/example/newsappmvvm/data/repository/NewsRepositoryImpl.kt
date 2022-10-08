@@ -3,7 +3,7 @@ package com.example.newsappmvvm.data.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.newsappmvvm.data.api.RetrofitInstance
-import com.example.newsappmvvm.data.db.ArticleDatabase
+import com.example.newsappmvvm.data.db.ArticleDao
 import com.example.newsappmvvm.domain.model.Article
 import com.example.newsappmvvm.domain.model.NewsResponse
 import com.example.newsappmvvm.domain.repository.NewsRepository
@@ -11,7 +11,7 @@ import com.example.newsappmvvm.utils.Resource
 import java.io.IOException
 
 class NewsRepositoryImpl(
-    val db: ArticleDatabase
+    private val articleDao: ArticleDao
 ) : NewsRepository {
 
     override suspend fun getBreakingNews(
@@ -57,13 +57,13 @@ class NewsRepositoryImpl(
     }
 
     override suspend fun upsertArticle(article: Article) =
-        db.getArticleDao().upsert(article.map())
+        articleDao.upsert(article.map())
 
     override suspend fun deleteArticle(article: Article) =
-        db.getArticleDao().deleteArticle(article.map())
+        articleDao.deleteArticle(article.map())
 
     override fun getSavedArticles(): LiveData<List<Article>> =
-        Transformations.map(db.getArticleDao().getAllArticles()) { list ->
+        Transformations.map(articleDao.getAllArticles()) { list ->
             list.map { it.map() }
         }
 }

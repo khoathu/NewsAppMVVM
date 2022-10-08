@@ -8,6 +8,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.newsappmvvm.R
 import com.example.newsappmvvm.data.db.ArticleDatabase
 import com.example.newsappmvvm.data.repository.NewsRepositoryImpl
+import com.example.newsappmvvm.domain.usecases.news.*
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import kotlinx.android.synthetic.main.activity_news.*
 
@@ -19,9 +20,22 @@ class NewsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_news)
 
-        val newsRepository = NewsRepositoryImpl(ArticleDatabase(this))
+        val newsRepository = NewsRepositoryImpl(ArticleDatabase(this).getArticleDao())
+        val getBreakingNewsUseCase = GetBreakingNewsUseCase(newsRepository)
+        val requestSearchNewsUseCase = RequestSearchNewsUseCase(newsRepository)
+        val getSavedArticlesUseCase = GetSavedArticlesUseCase(newsRepository)
+        val requestDeleteArticleUseCase = RequestDeleteArticleUseCase(newsRepository)
+        val requestUpsertArticleUseCase = RequestUpsertArticleUseCase(newsRepository)
+
         val viewModelProviderFactory =
-            NewsViewModelProviderFactory(application, newsRepository)
+            NewsViewModelProviderFactory(
+                application,
+                getBreakingNewsUseCase,
+                requestSearchNewsUseCase,
+                getSavedArticlesUseCase,
+                requestDeleteArticleUseCase,
+                requestUpsertArticleUseCase
+            )
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(NewsViewModel::class.java)
 
 

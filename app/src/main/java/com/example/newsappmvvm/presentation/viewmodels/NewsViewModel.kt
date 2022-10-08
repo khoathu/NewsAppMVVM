@@ -5,16 +5,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.newsappmvvm.data.repository.NewsRepositoryImpl
 import com.example.newsappmvvm.domain.model.Article
 import com.example.newsappmvvm.domain.model.NewsResponse
+import com.example.newsappmvvm.domain.usecases.news.*
 import com.example.newsappmvvm.utils.Resource
 import com.example.newsappmvvm.utils.Utils
 import kotlinx.coroutines.launch
 
 class NewsViewModel(
     val app: Application,
-    val newsRepository: NewsRepositoryImpl
+    private val getBreakingNewsUseCase: GetBreakingNewsUseCase,
+    private val requestSearchNewsUseCase: RequestSearchNewsUseCase,
+    private val getSavedArticlesUseCase: GetSavedArticlesUseCase,
+    private val requestDeleteArticleUseCase: RequestDeleteArticleUseCase,
+    private val requestUpsertArticleUseCase: RequestUpsertArticleUseCase
 ) : AndroidViewModel(app) {
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
@@ -32,7 +36,8 @@ class NewsViewModel(
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
         breakingNews.postValue(Resource.Loading())
         if (Utils.hasInternetConnection(app)) {
-            when (val response = newsRepository.getBreakingNews(countryCode, breakingNewsPage)) {
+            val response = getBreakingNewsUseCase(countryCode, breakingNewsPage)
+            when (response) {
                 is Resource.Success -> breakingNews.postValue(handleBreakingNewsResponse(response))
                 else -> breakingNews.postValue(response)
             }
@@ -44,7 +49,7 @@ class NewsViewModel(
     fun searchNews(query: String) = viewModelScope.launch {
         searchNews.postValue(Resource.Loading())
         if (Utils.hasInternetConnection(app)) {
-            val response = newsRepository.searchNews(query, searchNewsPage)
+            val response = requestSearchNewsUseCase(query, searchNewsPage)
             when (response) {
                 is Resource.Success -> searchNews.postValue(handleSearchNewsResponse(response))
                 else -> searchNews.postValue(response)
@@ -55,14 +60,14 @@ class NewsViewModel(
     }
 
     fun saveArticle(article: Article) = viewModelScope.launch {
-        newsRepository.upsertArticle(article)
+        requestUpsertArticleUseCase(article)
     }
 
     fun deleteArticle(article: Article) = viewModelScope.launch {
-        newsRepository.deleteArticle(article)
+        requestDeleteArticleUseCase(article)
     }
 
-    fun getSavedArticles(): LiveData<List<Article>> = newsRepository.getSavedArticles()
+    fun getSavedArticles(): LiveData<List<Article>> = getSavedArticlesUseCase()
 
     private fun handleSearchNewsResponse(response: Resource<NewsResponse>): Resource<NewsResponse> {
         response.data?.let { resultResponse ->
