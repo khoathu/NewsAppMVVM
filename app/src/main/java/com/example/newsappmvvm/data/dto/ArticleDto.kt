@@ -17,7 +17,8 @@ data class ArticleDto(
     val source: SourceDto?,
     val title: String?,
     val url: String?,
-    val urlToImage: String?
+    val urlToImage: String?,
+    val isFavorite: Boolean = false
 ) : Mapable<Article> {
 
     //map to domain model
@@ -31,7 +32,8 @@ data class ArticleDto(
             source = source?.map(),
             title = title,
             url = url,
-            urlToImage = urlToImage
+            urlToImage = urlToImage,
+            isFavorite = isFavorite
         )
     }
 }

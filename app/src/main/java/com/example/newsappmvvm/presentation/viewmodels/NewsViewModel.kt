@@ -10,9 +10,12 @@ import com.example.newsappmvvm.domain.model.NewsResponse
 import com.example.newsappmvvm.domain.usecases.news.*
 import com.example.newsappmvvm.utils.Resource
 import com.example.newsappmvvm.utils.Utils
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NewsViewModel(
+@HiltViewModel
+class NewsViewModel @Inject constructor(
     val app: Application,
     private val getBreakingNewsUseCase: GetBreakingNewsUseCase,
     private val requestSearchNewsUseCase: RequestSearchNewsUseCase,
@@ -67,7 +70,7 @@ class NewsViewModel(
         requestDeleteArticleUseCase(article)
     }
 
-    fun getSavedArticles(): LiveData<List<Article>> = getSavedArticlesUseCase()
+    fun getFavoriteArticles(): LiveData<List<Article>> = getSavedArticlesUseCase()
 
     private fun handleSearchNewsResponse(response: Resource<NewsResponse>): Resource<NewsResponse> {
         response.data?.let { resultResponse ->

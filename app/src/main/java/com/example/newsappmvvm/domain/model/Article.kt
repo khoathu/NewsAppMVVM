@@ -12,7 +12,8 @@ data class Article(
     val source: Source?,
     val title: String?,
     val url: String?,
-    val urlToImage: String?
+    val urlToImage: String?,
+    var isFavorite: Boolean
 ) : Mapable<ArticleDto>, Serializable {
 
     override fun hashCode(): Int {
@@ -34,7 +35,8 @@ data class Article(
             source = source?.map(),
             title = title,
             url = url,
-            urlToImage = urlToImage
+            urlToImage = urlToImage,
+            isFavorite = isFavorite
         )
     }
 }

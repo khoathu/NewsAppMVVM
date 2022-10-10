@@ -14,5 +14,5 @@ interface NewsRepository {
 
     suspend fun deleteArticle(article: Article)
 
-    fun getSavedArticles(): LiveData<List<Article>>
+    fun getFavoriteArticles(): LiveData<List<Article>>
 }

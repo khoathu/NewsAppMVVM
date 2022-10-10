@@ -20,15 +20,15 @@ import kotlinx.coroutines.launch
 
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
     lateinit var viewModel: NewsViewModel
-    lateinit var savedNewsAdapter: NewsAdapter
+    lateinit var favoriteNewsAdapter: NewsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = (activity as NewsActivity).viewModel
+        viewModel = (activity as NewsActivity).newsViewModel
         setupRecycleView()
 
-        viewModel.getSavedArticles().observe(viewLifecycleOwner, Observer { articles ->
-            savedNewsAdapter.differ.submitList(articles)
+        viewModel.getFavoriteArticles().observe(viewLifecycleOwner, Observer { articles ->
+            favoriteNewsAdapter.differ.submitList(articles)
         })
 
         val onItemTouchHelper = object : ItemTouchHelper.SimpleCallback(
@@ -45,7 +45,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val article = savedNewsAdapter.differ.currentList[position]
+                val article = favoriteNewsAdapter.differ.currentList[position]
                 viewModel.deleteArticle(article)
                 Snackbar.make(rvSavedNews, "Article Deleted successfully", Snackbar.LENGTH_LONG)
                     .apply {
@@ -66,7 +66,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             attachToRecyclerView(rvSavedNews)
         }
 
-        savedNewsAdapter.setOnClickListener {
+        favoriteNewsAdapter.setOnClickListener {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
             }
@@ -79,9 +79,9 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
     }
 
     private fun setupRecycleView() {
-        savedNewsAdapter = NewsAdapter()
+        favoriteNewsAdapter = NewsAdapter()
         rvSavedNews.apply {
-            adapter = savedNewsAdapter
+            adapter = favoriteNewsAdapter
             layoutManager = LinearLayoutManager(activity)
         }
     }

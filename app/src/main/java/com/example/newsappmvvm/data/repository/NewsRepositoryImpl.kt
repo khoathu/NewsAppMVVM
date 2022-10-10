@@ -2,15 +2,17 @@ package com.example.newsappmvvm.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.example.newsappmvvm.data.api.RetrofitInstance
+import com.example.newsappmvvm.data.api.NewsAPI
 import com.example.newsappmvvm.data.db.ArticleDao
 import com.example.newsappmvvm.domain.model.Article
 import com.example.newsappmvvm.domain.model.NewsResponse
 import com.example.newsappmvvm.domain.repository.NewsRepository
 import com.example.newsappmvvm.utils.Resource
 import java.io.IOException
+import javax.inject.Inject
 
-class NewsRepositoryImpl(
+class NewsRepositoryImpl @Inject constructor(
+    private val newsApi: NewsAPI,
     private val articleDao: ArticleDao
 ) : NewsRepository {
 
@@ -19,7 +21,7 @@ class NewsRepositoryImpl(
         pageNumber: Int
     ): Resource<NewsResponse> {
         try {
-            val response = RetrofitInstance.api.getBreakingNews(countryCode, pageNumber)
+            val response = newsApi.getBreakingNews(countryCode, pageNumber)
             if (response.isSuccessful) {
                 response.body()?.let { resultResponse ->
                     return Resource.Success(resultResponse.map())
@@ -39,7 +41,7 @@ class NewsRepositoryImpl(
 
     override suspend fun searchNews(query: String, pageNumber: Int): Resource<NewsResponse> {
         try {
-            val response = RetrofitInstance.api.searchForNews(query, pageNumber)
+            val response = newsApi.searchForNews(query, pageNumber)
             if (response.isSuccessful) {
                 response.body()?.let { resultResponse ->
                     return Resource.Success(resultResponse.map())
@@ -62,8 +64,11 @@ class NewsRepositoryImpl(
     override suspend fun deleteArticle(article: Article) =
         articleDao.deleteArticle(article.map())
 
-    override fun getSavedArticles(): LiveData<List<Article>> =
-        Transformations.map(articleDao.getAllArticles()) { list ->
-            list.map { it.map() }
+    override fun getFavoriteArticles(): LiveData<List<Article>> =
+        Transformations.map(articleDao.getFavoriteArticles()) { list ->
+            list.map { item -> item.map() }
         }
+
+    fun getLocalBreakingNews(): List<Article> = articleDao.getLocalBreakingNews().map { it.map() }
+
 }

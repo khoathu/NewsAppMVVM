@@ -8,11 +8,17 @@ import com.example.newsappmvvm.data.dto.ArticleDto
 interface ArticleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(article: ArticleDto) : Long
-
-    @Query("SELECT * FROM articles")
-    fun getAllArticles() : LiveData<List<ArticleDto>>
+    suspend fun upsert(article: ArticleDto): Long
 
     @Delete
     suspend fun deleteArticle(article: ArticleDto)
+
+    @Query("SELECT * FROM articles")
+    fun getAllArticles(): LiveData<List<ArticleDto>>
+
+    @Query("SELECT * FROM articles WHERE isFavorite = 1")
+    fun getFavoriteArticles(): LiveData<List<ArticleDto>>
+
+    @Query("SELECT * FROM articles WHERE isFavorite = 0")
+    fun getLocalBreakingNews(): List<ArticleDto>
 }

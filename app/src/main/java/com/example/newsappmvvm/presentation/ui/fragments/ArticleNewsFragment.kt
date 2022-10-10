@@ -18,7 +18,7 @@ class ArticleNewsFragment : Fragment(R.layout.fragment_article) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = (activity as NewsActivity).viewModel
+        viewModel = (activity as NewsActivity).newsViewModel
 
         val article = args.article
 
@@ -28,6 +28,7 @@ class ArticleNewsFragment : Fragment(R.layout.fragment_article) {
         }
 
         fab.setOnClickListener {
+            article.isFavorite = true
             viewModel.saveArticle(article)
             Snackbar.make(view, "Article saved successfully", Snackbar.LENGTH_SHORT).show()
         }
