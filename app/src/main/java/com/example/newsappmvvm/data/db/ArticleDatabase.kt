@@ -9,7 +9,7 @@ import com.example.newsappmvvm.data.dto.ArticleDto
 
 @Database(
     entities = [ArticleDto::class],
-    version = 2
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class ArticleDatabase : RoomDatabase() {
@@ -19,10 +19,14 @@ abstract class ArticleDatabase : RoomDatabase() {
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE Articles ADD COLUMN isFavorite INTEGER DEFAULT 0 NOT NULL ")
+                database.execSQL("ALTER TABLE articles ADD COLUMN isFavorite INTEGER DEFAULT 0 NOT NULL")
                 //database.execSQL("UPDATE Articles SET isFavorite = 0")
             }
-
+        }
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE UNIQUE INDEX 'index_articles_id_url' ON 'articles'('id','url')")
+            }
         }
     }
 

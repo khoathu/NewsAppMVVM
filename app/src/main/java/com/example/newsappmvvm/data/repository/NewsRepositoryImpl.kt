@@ -1,5 +1,6 @@
 package com.example.newsappmvvm.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.newsappmvvm.data.api.NewsAPI
@@ -8,6 +9,7 @@ import com.example.newsappmvvm.domain.model.Article
 import com.example.newsappmvvm.domain.model.NewsResponse
 import com.example.newsappmvvm.domain.repository.NewsRepository
 import com.example.newsappmvvm.utils.Resource
+import com.example.newsappmvvm.utils.Utils.Companion.isNetworkError
 import java.io.IOException
 import javax.inject.Inject
 
@@ -24,16 +26,39 @@ class NewsRepositoryImpl @Inject constructor(
             val response = newsApi.getBreakingNews(countryCode, pageNumber)
             if (response.isSuccessful) {
                 response.body()?.let { resultResponse ->
+                    //save list to database
+                    resultResponse.articles.let {
+                        if (pageNumber == 1) {
+                            //in case refresh delete all old data
+                            articleDao.deleteAllBreakingArticles()
+                            Log.e("NewsRepositoryImpl", "deleteAllBreakingArticles")
+                        }
+                        // save new data
+                        articleDao.saveArticles(it)
+                        Log.e("NewsRepositoryImpl", "saveArticles")
+                    }
+                    Log.e("NewsRepositoryImpl", "Success")
                     return Resource.Success(resultResponse.map())
                 }
             } else {
                 return Resource.Error(response.message())
             }
         } catch (t: Throwable) {
-            return when (t) {
+            Log.e("NewsRepositoryImpl", "Throwable :" + t.message)
+            return if (isNetworkError(t)) {
+                val response = getLocalBreakingNewsResponse()
+                if (response.articles.isNotEmpty() && pageNumber == 1) {
+                    Resource.Success(getLocalBreakingNewsResponse())
+                } else {
+                    Resource.Error("No internet connection")
+                }
+            } else {
+                Resource.Error(t.message.toString())
+            }
+            /*return when (t) {
                 is IOException -> Resource.Error("Network failure")
                 else -> Resource.Error(t.message.toString())
-            }
+            }*/
         }
         return Resource.Error("Conversion Error")
     }
@@ -69,6 +94,13 @@ class NewsRepositoryImpl @Inject constructor(
             list.map { item -> item.map() }
         }
 
-    fun getLocalBreakingNews(): List<Article> = articleDao.getLocalBreakingNews().map { it.map() }
+    override suspend fun getLocalBreakingNewsResponse(): NewsResponse {
+        val list = articleDao.getLocalBreakingNews().map { it.map() }.toMutableList()
+        return NewsResponse(list, "ok", list.size)
+    }
+
+    override suspend fun deleteAllArticles() {
+        articleDao.deleteAllArticles()
+    }
 
 }

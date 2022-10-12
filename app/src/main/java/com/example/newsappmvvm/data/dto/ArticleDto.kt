@@ -1,11 +1,13 @@
 package com.example.newsappmvvm.data.dto
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.newsappmvvm.domain.model.Article
 
 @Entity(
-    tableName = "articles"
+    tableName = "articles",
+    indices = [Index(value = ["id","url"], unique = true)]
 )
 data class ArticleDto(
     @PrimaryKey(autoGenerate = true)

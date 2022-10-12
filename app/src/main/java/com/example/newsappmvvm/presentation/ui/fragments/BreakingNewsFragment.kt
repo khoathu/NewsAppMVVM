@@ -15,6 +15,7 @@ import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import com.example.newsappmvvm.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsappmvvm.utils.Resource
+import com.example.newsappmvvm.utils.Utils
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
@@ -134,9 +135,11 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning
                     && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                isRefreshNewList = false
-                viewModel.getBreakingNews("us")
-                isScrolling = false
+                if (Utils.hasInternetConnection(context!!)) {
+                    isRefreshNewList = false
+                    viewModel.getBreakingNews("us")
+                    isScrolling = false
+                }
             }
         }
 

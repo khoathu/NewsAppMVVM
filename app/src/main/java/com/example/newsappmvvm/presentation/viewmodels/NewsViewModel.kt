@@ -21,7 +21,8 @@ class NewsViewModel @Inject constructor(
     private val requestSearchNewsUseCase: RequestSearchNewsUseCase,
     private val getSavedArticlesUseCase: GetSavedArticlesUseCase,
     private val requestDeleteArticleUseCase: RequestDeleteArticleUseCase,
-    private val requestUpsertArticleUseCase: RequestUpsertArticleUseCase
+    private val requestUpsertArticleUseCase: RequestUpsertArticleUseCase,
+    private val requestDeleteAllArticlesUseCase: RequestDeleteAllArticlesUseCase
 ) : AndroidViewModel(app) {
 
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
@@ -34,19 +35,29 @@ class NewsViewModel @Inject constructor(
 
     init {
         getBreakingNews("us")
+        //test
+        /*viewModelScope.launch {
+            requestDeleteAllArticlesUseCase()
+        }*/
     }
 
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
         breakingNews.postValue(Resource.Loading())
-        if (Utils.hasInternetConnection(app)) {
-            val response = getBreakingNewsUseCase(countryCode, breakingNewsPage)
-            when (response) {
-                is Resource.Success -> breakingNews.postValue(handleBreakingNewsResponse(response))
-                else -> breakingNews.postValue(response)
-            }
+        //if (Utils.hasInternetConnection(app)) {
+        val response = getBreakingNewsUseCase(countryCode, breakingNewsPage)
+        if (response is Resource.Success && response.data != null) {
+            breakingNews.postValue(handleBreakingNewsResponse(response.data))
         } else {
-            breakingNews.postValue(Resource.Error("No internet connection"))
+            breakingNews.postValue(response)
         }
+
+        /*when (response) {
+            is Resource.Success -> breakingNews.postValue(handleBreakingNewsResponse(response))
+            else -> breakingNews.postValue(response)
+        }*/
+        //} else {
+        //    breakingNews.postValue(Resource.Error("No internet connection"))
+        //}
     }
 
     fun searchNews(query: String) = viewModelScope.launch {
@@ -87,8 +98,8 @@ class NewsViewModel @Inject constructor(
         return response
     }
 
-    private fun handleBreakingNewsResponse(response: Resource<NewsResponse>): Resource<NewsResponse> {
-        response.data?.let { resultResponse ->
+    private fun handleBreakingNewsResponse(response: NewsResponse): Resource<NewsResponse> {
+        response.let { resultResponse ->
             breakingNewsPage++
             if (breakingNewsResponse == null) {
                 breakingNewsResponse = resultResponse
@@ -99,6 +110,5 @@ class NewsViewModel @Inject constructor(
             }
             return Resource.Success(breakingNewsResponse ?: resultResponse)
         }
-        return response
     }
 }

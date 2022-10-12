@@ -5,20 +5,29 @@ import androidx.room.*
 import com.example.newsappmvvm.data.dto.ArticleDto
 
 @Dao
-interface ArticleDao {
+abstract class ArticleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(article: ArticleDto): Long
+    abstract suspend fun upsert(article: ArticleDto): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun saveArticles(articles: List<ArticleDto>)
 
     @Delete
-    suspend fun deleteArticle(article: ArticleDto)
+    abstract suspend fun deleteArticle(article: ArticleDto)
+
+    @Query("DELETE FROM articles WHERE isFavorite == 0")
+    abstract suspend fun deleteAllBreakingArticles()
+
+    @Query("DELETE FROM articles")
+    abstract suspend fun deleteAllArticles()
 
     @Query("SELECT * FROM articles")
-    fun getAllArticles(): LiveData<List<ArticleDto>>
+    abstract fun getAllArticles(): LiveData<List<ArticleDto>>
 
-    @Query("SELECT * FROM articles WHERE isFavorite = 1")
-    fun getFavoriteArticles(): LiveData<List<ArticleDto>>
+    @Query("SELECT * FROM articles WHERE isFavorite == 1")
+    abstract fun getFavoriteArticles(): LiveData<List<ArticleDto>>
 
-    @Query("SELECT * FROM articles WHERE isFavorite = 0")
-    fun getLocalBreakingNews(): List<ArticleDto>
+    @Query("SELECT * FROM articles WHERE isFavorite == 0")
+    abstract suspend fun getLocalBreakingNews(): List<ArticleDto>
 }

@@ -8,6 +8,8 @@ import android.os.Build
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -73,6 +75,13 @@ class Utils {
                 }
             }
             return false
+        }
+
+        /**
+         *check exception is network
+         * **/
+        fun isNetworkError(throwable: Throwable): Boolean {
+            return throwable is SocketTimeoutException || throwable is UnknownHostException
         }
 
         /**

@@ -41,4 +41,10 @@ class UseCaseModule {
     fun provideRequestUpsertArticleUseCase(newsRepository: NewsRepository): RequestUpsertArticleUseCase {
         return RequestUpsertArticleUseCase(newsRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideRequestDeleteAllArticleUseCase(newsRepository: NewsRepository): RequestDeleteAllArticlesUseCase {
+        return RequestDeleteAllArticlesUseCase(newsRepository)
+    }
 }

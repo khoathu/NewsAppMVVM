@@ -1,6 +1,6 @@
 package com.example.newsappmvvm.presentation.ui
 
-import android.app.Application
+/*import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.newsappmvvm.domain.usecases.news.*
@@ -25,4 +25,4 @@ class NewsViewModelProviderFactory(
             requestUpsertArticleUseCase
         ) as T
     }
-}
+}*/

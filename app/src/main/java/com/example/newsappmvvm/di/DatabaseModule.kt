@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.newsappmvvm.data.db.ArticleDao
 import com.example.newsappmvvm.data.db.ArticleDatabase
 import com.example.newsappmvvm.data.db.ArticleDatabase.Companion.MIGRATION_1_2
+import com.example.newsappmvvm.data.db.ArticleDatabase.Companion.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,9 @@ class DatabaseModule {
             app,
             ArticleDatabase::class.java,
             "article_db.db"
-        ).addMigrations(MIGRATION_1_2).build()
+        ).addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_2_3)
+            .build()
     }
 
     @Provides

@@ -21,7 +21,8 @@ class ViewModelModule {
         requestSearchNewsUseCase: RequestSearchNewsUseCase,
         getSavedArticlesUseCase: GetSavedArticlesUseCase,
         requestDeleteArticleUseCase: RequestDeleteArticleUseCase,
-        requestUpsertArticleUseCase: RequestUpsertArticleUseCase
+        requestUpsertArticleUseCase: RequestUpsertArticleUseCase,
+        requestDeleteAllArticlesUseCase: RequestDeleteAllArticlesUseCase
     ): NewsViewModel {
         return NewsViewModel(
             app,
@@ -29,7 +30,8 @@ class ViewModelModule {
             requestSearchNewsUseCase,
             getSavedArticlesUseCase,
             requestDeleteArticleUseCase,
-            requestUpsertArticleUseCase
+            requestUpsertArticleUseCase,
+            requestDeleteAllArticlesUseCase
         )
     }
 }
