@@ -9,6 +9,7 @@ import com.example.newsappmvvm.R
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_news.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NewsActivity : AppCompatActivity() {

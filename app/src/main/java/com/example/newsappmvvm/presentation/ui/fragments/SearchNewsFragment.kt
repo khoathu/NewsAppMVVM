@@ -6,7 +6,9 @@ import android.widget.AbsListView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +18,7 @@ import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import com.example.newsappmvvm.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.newsappmvvm.utils.Constants.Companion.SEARCH_NEWS_TIME_DELAY
-import com.example.newsappmvvm.utils.Resource
+import com.example.newsappmvvm.utils.Utils
 import kotlinx.android.synthetic.main.fragment_search_news.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -43,8 +45,8 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                 delay(SEARCH_NEWS_TIME_DELAY)
                 editable?.let {
                     if (it.toString().isNotEmpty()) {
-                        viewModel.searchNewsPage = 1
-                        viewModel.searchNewsResponse = null
+                        viewModel.resetSearchPage()
+                        //state.value.searchNewsArticles = null
                         isRefreshNewList = true
                         viewModel.searchNews(it.toString())
                     }
@@ -63,17 +65,50 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
         }
 
         srlRefreshSearchNews.setOnRefreshListener {
-            val searchText = edSearch.text.toString()
-            if (searchText.isNotEmpty()) {
-                viewModel.searchNewsPage = 1
-                viewModel.searchNewsResponse = null
-                isRefreshNewList = true
-                viewModel.searchNews(searchText)
+            if (Utils.hasInternetConnection(requireContext())) {
+                val searchText = edSearch.text.toString()
+                if (searchText.isNotEmpty()) {
+                    viewModel.resetSearchPage()
+                    isRefreshNewList = true
+                    viewModel.searchNews(searchText)
+                }
             }
             srlRefreshSearchNews.isRefreshing = false
         }
 
-        viewModel.searchNews.observe(viewLifecycleOwner, Observer { response ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED)
+            {
+                viewModel.searchNewsState.collect { state ->
+                    if (state.isLoading) {
+                        showProgressBar()
+                    } else {
+                        hideProgressBar()
+                    }
+
+                    state.searchNewsArticles?.let { articles ->
+                        val isEmptyList = articles.isNullOrEmpty() && isRefreshNewList
+                        showEmptyList(isEmptyList)
+                        newsAdapter.differ.submitList(articles?.toList() ?: emptyList())
+                        val totalPages = state.searchNewsTotalResults / QUERY_PAGE_SIZE + 2
+                        isLastPage = totalPages == state.searchNewsPage
+                        if (isLastPage) {
+                            rvSearchNews.setPadding(0, 0, 0, 0)
+                        }
+                    }
+
+                    if (state.errorMessage.isNotBlank()) {
+                        Toast.makeText(
+                            activity,
+                            "An error occurred: ${state.errorMessage}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+
+        /*viewModel.searchNews.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
                     hideProgressBar()
@@ -100,7 +135,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                     showProgressBar()
                 }
             }
-        })
+        })*/
     }
 
     private fun setupRecycleView() {
@@ -159,9 +194,13 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
             val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning
                     && isTotalMoreThanVisible && isScrolling
             if (shouldPaginate) {
-                isRefreshNewList = false
-                viewModel.searchNews(edSearch?.text.toString())
-                isScrolling = false
+                if (Utils.hasInternetConnection(requireContext())) {
+                    if (edSearch?.text.toString().isNotEmpty()) {
+                        isRefreshNewList = false
+                        viewModel.searchNews(edSearch?.text.toString())
+                        isScrolling = false
+                    }
+                }
             }
         }
 

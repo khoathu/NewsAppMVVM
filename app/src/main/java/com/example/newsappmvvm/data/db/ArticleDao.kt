@@ -3,6 +3,7 @@ package com.example.newsappmvvm.data.db
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.newsappmvvm.data.dto.ArticleDto
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class ArticleDao {
@@ -23,10 +24,10 @@ abstract class ArticleDao {
     abstract suspend fun deleteAllArticles()
 
     @Query("SELECT * FROM articles")
-    abstract fun getAllArticles(): LiveData<List<ArticleDto>>
+    abstract fun getAllArticles(): Flow<List<ArticleDto>>
 
     @Query("SELECT * FROM articles WHERE isFavorite == 1")
-    abstract fun getFavoriteArticles(): LiveData<List<ArticleDto>>
+    abstract fun getFavoriteArticles(): Flow<List<ArticleDto>>
 
     @Query("SELECT * FROM articles WHERE isFavorite == 0")
     abstract suspend fun getLocalBreakingNews(): List<ArticleDto>

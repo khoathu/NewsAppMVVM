@@ -5,7 +5,9 @@ import android.view.View
 import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,9 +16,10 @@ import com.example.newsappmvvm.presentation.ui.NewsActivity
 import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import com.example.newsappmvvm.utils.Constants.Companion.QUERY_PAGE_SIZE
-import com.example.newsappmvvm.utils.Resource
 import com.example.newsappmvvm.utils.Utils
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
@@ -32,6 +35,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         viewModel = (activity as NewsActivity).newsViewModel
         setupRecyclerView()
 
+        val state = viewModel.breakingNewsState
+
         newAdapter.setOnClickListener {
             val bundle = Bundle().apply {
                 putSerializable("article", it)
@@ -43,13 +48,52 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         }
 
         srlRefreshList.setOnRefreshListener {
-            isRefreshNewList = true
-            viewModel.breakingNewsPage = 1
-            viewModel.breakingNewsResponse = null
-            viewModel.getBreakingNews("us")
+            if (Utils.hasInternetConnection(requireContext())) {
+                isRefreshNewList = true
+                state.value.breakingNewsPage = 1
+                state.value.breakingNewsTotalResults = 0
+                state.value.breakingNewsArticles = null
+                //viewModel.state.value.breakingNewsResponse = null
+                viewModel.getBreakingNews("us")
+            } else {
+                srlRefreshList.isRefreshing = false
+            }
         }
 
-        viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED)
+            {
+                state.collect { state ->
+                    if (state.isLoading) {
+                        showProgressBar()
+                    } else {
+                        hideProgressBar()
+                    }
+
+                    state.breakingNewsArticles?.let { articles ->
+                        val isEmptyList = articles.isNullOrEmpty() && isRefreshNewList
+                        showEmptyList(isEmptyList)
+
+                        newAdapter.differ.submitList(articles?.toList())
+                        val totalPages = state.breakingNewsTotalResults / QUERY_PAGE_SIZE + 2
+                        isLastPage = totalPages == state.breakingNewsPage
+                        if (isLastPage) {
+                            rvBreakingNews.setPadding(0, 0, 0, 0)
+                        }
+                    }
+
+                    if (state.errorMessage.isNotBlank()) {
+                        Toast.makeText(
+                            activity,
+                            "An error occurred: ${state.errorMessage}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+
+        /*viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Resource.Success -> {
                     hideProgressBar()
@@ -76,7 +120,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                     showProgressBar()
                 }
             }
-        })
+        })*/
     }
 
     private fun showEmptyList(isEmpty: Boolean) {

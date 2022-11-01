@@ -3,15 +3,16 @@ package com.example.newsappmvvm.presentation.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsappmvvm.R
-import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.ui.NewsActivity
+import com.example.newsappmvvm.presentation.ui.adapters.NewsAdapter
 import com.example.newsappmvvm.presentation.viewmodels.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_saved_news.*
@@ -27,9 +28,14 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         viewModel = (activity as NewsActivity).newsViewModel
         setupRecycleView()
 
-        viewModel.getFavoriteArticles().observe(viewLifecycleOwner, Observer { articles ->
-            favoriteNewsAdapter.differ.submitList(articles)
-        })
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED)
+            {
+                viewModel.getFavoriteArticles().collect { articles ->
+                    favoriteNewsAdapter.differ.submitList(articles)
+                }
+            }
+        }
 
         val onItemTouchHelper = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,

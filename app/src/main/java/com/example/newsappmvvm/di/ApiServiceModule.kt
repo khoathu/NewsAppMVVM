@@ -8,10 +8,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import javax.inject.Singleton
 
 @Module
@@ -49,6 +52,18 @@ class ApiServiceModule {
         }
         return OkHttpClient.Builder()
             .addInterceptor(logging)
+//            .addInterceptor(Interceptor { chain ->
+//                val request: Request = chain.request()
+//                val response = chain.proceed(request)
+//                when (response.code) {
+//                    //handle your base error here
+//                    401 ->
+//                        throw IOException("Server error")
+//
+//                }
+//                response
+//            })
             .build()
     }
+
 }

@@ -7,10 +7,10 @@ import com.example.newsappmvvm.domain.model.Article
 
 @Entity(
     tableName = "articles",
-    indices = [Index(value = ["id","url"], unique = true)]
+    indices = [Index(value = ["url"], unique = true)]
 )
 data class ArticleDto(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     var id: Int? = null,
     val author: String?,
     val content: String?,
